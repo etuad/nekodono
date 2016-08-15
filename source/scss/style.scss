@@ -1,4 +1,5 @@
 @import 'foundation/foundatons';
-
-@include foundation-global-styles;
+@import 'components/global';
+@import 'components/typography';
 @import 'components/layout';
+@import 'components/navigation';

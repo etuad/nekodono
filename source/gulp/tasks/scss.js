@@ -3,7 +3,7 @@
 var conf = require("../config.js");
 var gulp = require("gulp");
 var $ = require("gulp-load-plugins")();
-var browserSync = require("browser-sync");
+var browserSync = require("browser-sync").create();
 
 gulp.task("scss", function () {
     return gulp.src(conf.scss.src)
@@ -16,12 +16,21 @@ gulp.task("scss", function () {
         })))
         .pipe($.if("*.css", $.mergeMediaQueries()))
         .pipe($.if("*.css", $.csscomb()))
+        .pipe($.sourcemaps.write({
+            sourceRoot: conf.wpThemeUri + "/",
+            mapFile: function(mapFilePath) {
+                return mapFile.replace('.css.map', '.map');
+            }
+        }))
         .pipe(gulp.dest(conf.scss.dest))
         .pipe($.if("*.css", $.rename({suffix: ".min"})))
         .pipe($.if("*.css", $.csso()))
-        .pipe($.sourcemaps.write("maps"))
+        .pipe($.sourcemaps.write({
+            sourceRoot: conf.wpThemeUri + "/",
+            mapFile: function(mapFilePath) {
+                return mapFile.replace('.css.map', '.map');
+            }
+        }))
         .pipe(gulp.dest(conf.scss.dest))
-        .pipe(browserSync.reload({
-            stream: true
-        }));
+        .pipe(browserSync.stream({match: '**/*.css'}));
 });

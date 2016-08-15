@@ -1,0 +1,10 @@
+.menu {
+    @include menu-base;
+    @include menu-icons;
+    @include menu-direction(horizontal);
+
+    &.vertical {
+        @include menu-direction(vertical);
+    }
+}
+@include foundation-dropdown-menu;
