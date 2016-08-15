@@ -41,8 +41,7 @@ module.exports = {
     js             : {
         map   : src + "/js/**/*.map",
         src   : [
-            nodeModules + "/fastclick/lib/fastclick.js",
-            nodeModules + "/foundation-sites/js/foundation.core.js"
+            src + "/js/apps.js"
         ],
         minify: [
             dest + "/js/**/*.js",
@@ -54,6 +53,7 @@ module.exports = {
         dest + "/img/**/*.+(jpg|jpeg|png|gif|svg)",
         dest + "/css/**/*.+(css|map)",
         dest + "/js/**/*.+(js|map)",
-        "!" + dest + "/css/vendor/**/*.css"
+        "!" + dest + "/css/vendor/**/*.css",
+        "!" + dest + "/js/customizer.js"
     ]
 };

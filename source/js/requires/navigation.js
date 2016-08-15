@@ -31,6 +31,7 @@
 	}
 
 	button.onclick = function() {
+        console.log("Tests");
 		if ( -1 !== container.className.indexOf( 'toggled' ) ) {
 			container.className = container.className.replace( ' toggled', '' );
 			button.setAttribute( 'aria-expanded', 'false' );
