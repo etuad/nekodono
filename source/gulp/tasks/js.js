@@ -3,11 +3,10 @@
 var conf = require("../config.js");
 var gulp = require("gulp");
 var $ = require("gulp-load-plugins")();
-var watchify = require("gulp-watchify");
 var browserSync = require("browser-sync");
 var watching = false;
 
-gulp.task("js", watchify(function (watchify) {
+gulp.task("js", $.watchify(function (watchify) {
     var buffer = require("vinyl-buffer");
     var browserify = require("browserify");
 
