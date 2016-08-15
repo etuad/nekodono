@@ -11,6 +11,7 @@
         @include grid-col(8);
     }
 }
+
 .widget-area {
     @include grid-col;
     @include breakpoint(medium) {
