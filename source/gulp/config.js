@@ -6,8 +6,9 @@ var gulpTasks = root + "/tasks";
 var theme = path.resolve(root + "/../../");
 var themeName = theme.replace(/((.*?)\/)*/, "");
 var wpPath = root.replace("/wp-content/themes/" + themeName + "/source/gulp", "");
-var wpURI = "https://www.visualive.jp";
-var wpSSL = true;
+var wpURI = "http://nekodono.com";
+var wpThemeUri = wpURI + "/wp-content/themes/" + themeName;
+var wpSSL = false;
 var src = theme + "/source";
 var dest = theme + "/assets";
 var bowerComponents = theme + "/bower_components";
@@ -18,6 +19,7 @@ module.exports = {
     gulpTasks      : gulpTasks,
     wpPath         : wpPath,
     wpURI          : wpURI,
+    wpThemeUri     : wpThemeUri,
     wpSSL          : wpSSL,
     theme          : theme,
     src            : src,
