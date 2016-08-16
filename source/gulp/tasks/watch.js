@@ -5,6 +5,9 @@ var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 
 gulp.task('watch', function () {
+    $.watch(conf.html.src, function () {
+        return gulp.start(['html']);
+    });
     $.watch(conf.img.src, function () {
         return gulp.start(['img']);
     });

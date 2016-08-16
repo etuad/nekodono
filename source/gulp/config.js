@@ -26,10 +26,16 @@ module.exports = {
     dest           : dest,
     bowerComponents: bowerComponents,
     nodeModules    : nodeModules,
-    html           : [
-        theme + '/**/*.html',
-        theme + '/**/*.php'
-    ],
+    html           : {
+        src: [
+            theme + '/**/*.html',
+            theme + '/**/*.php',
+            '!' + bowerComponents + '/**/*.html',
+            '!' + bowerComponents + '/**/*.php',
+            '!' + nodeModules + '/**/*.html',
+            '!' + nodeModules + '/**/*.php'
+        ]
+    },
     img            : {
         src : src + '/img/**/*.+(jpg|jpeg|png|gif|svg)',
         dest: dest + '/img'
@@ -41,11 +47,11 @@ module.exports = {
         dest: dest + '/css'
     },
     js             : {
-        map   : src + '/js/**/*.map',
-        src   : [
+        map : src + '/js/**/*.map',
+        src : [
             src + '/js/**/*.js'
         ],
-        dest  : dest + '/js'
+        dest: dest + '/js'
     },
     del            : [
         dest + '/img/**/*',
