@@ -43,19 +43,13 @@ module.exports = {
     js             : {
         map   : src + '/js/**/*.map',
         src   : [
-            src + '/js/apps.js'
-        ],
-        minify: [
-            dest + '/js/**/*.js',
-            '!' + dest + '/js/**/*.min.js'
+            src + '/js/**/*.js'
         ],
         dest  : dest + '/js'
     },
     del            : [
-        dest + '/img/**/*.+(jpg|jpeg|png|gif|svg)',
-        dest + '/css/**/*.+(css|map)',
-        dest + '/js/**/*.+(js|map)',
-        '!' + dest + '/css/vendor/**/*.css',
-        '!' + dest + '/js/customizer.js'
+        dest + '/img/**/*',
+        dest + '/css/**/*',
+        dest + '/js/**/*'
     ]
 };

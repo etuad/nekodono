@@ -8,8 +8,8 @@ var foundationUtilMotion     = require('foundation-sites/js/foundation.util.moti
 var foundationUtilNest       = require('foundation-sites/js/foundation.util.nest');
 var foundationDropdownMenu   = require('foundation-sites/js/foundation.dropdownMenu');
 var foundationAccordionMenu  = require('foundation-sites/js/foundation.accordionMenu');
-var navigation               = require('./requires/navigation');
-var skipLinkFocusFix         = require('./requires/skip-link-focus-fix');
+var navigation               = require('./components/navigation');
+var skipLinkFocusFix         = require('./components/skip-link-focus-fix');
 
 (function ($) {
     'use strict';

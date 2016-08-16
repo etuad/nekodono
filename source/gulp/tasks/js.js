@@ -11,6 +11,7 @@ gulp.task('js', $.watchify(function (watchify) {
     var browserify = require('browserify');
 
     return gulp.src(conf.js.src)
+        .pipe($.ignore.exclude('components/**/*.js'))
         .pipe(watchify({
             watch: watching
         }))
