@@ -843,6 +843,309 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     })();
   }, {}], 2: [function (require, module, exports) {
+    'use strict';
+
+    !function ($) {
+
+      /**
+       * AccordionMenu module.
+       * @module foundation.accordionMenu
+       * @requires foundation.util.keyboard
+       * @requires foundation.util.motion
+       * @requires foundation.util.nest
+       */
+
+      var AccordionMenu = function () {
+        /**
+         * Creates a new instance of an accordion menu.
+         * @class
+         * @fires AccordionMenu#init
+         * @param {jQuery} element - jQuery object to make into an accordion menu.
+         * @param {Object} options - Overrides to the default plugin settings.
+         */
+        function AccordionMenu(element, options) {
+          _classCallCheck(this, AccordionMenu);
+
+          this.$element = element;
+          this.options = $.extend({}, AccordionMenu.defaults, this.$element.data(), options);
+
+          Foundation.Nest.Feather(this.$element, 'accordion');
+
+          this._init();
+
+          Foundation.registerPlugin(this, 'AccordionMenu');
+          Foundation.Keyboard.register('AccordionMenu', {
+            'ENTER': 'toggle',
+            'SPACE': 'toggle',
+            'ARROW_RIGHT': 'open',
+            'ARROW_UP': 'up',
+            'ARROW_DOWN': 'down',
+            'ARROW_LEFT': 'close',
+            'ESCAPE': 'closeAll',
+            'TAB': 'down',
+            'SHIFT_TAB': 'up'
+          });
+        }
+
+        /**
+         * Initializes the accordion menu by hiding all nested menus.
+         * @private
+         */
+
+
+        _createClass(AccordionMenu, [{
+          key: "_init",
+          value: function _init() {
+            this.$element.find('[data-submenu]').not('.is-active').slideUp(0); //.find('a').css('padding-left', '1rem');
+            this.$element.attr({
+              'role': 'tablist',
+              'aria-multiselectable': this.options.multiOpen
+            });
+
+            this.$menuLinks = this.$element.find('.is-accordion-submenu-parent');
+            this.$menuLinks.each(function () {
+              var linkId = this.id || Foundation.GetYoDigits(6, 'acc-menu-link'),
+                  $elem = $(this),
+                  $sub = $elem.children('[data-submenu]'),
+                  subId = $sub[0].id || Foundation.GetYoDigits(6, 'acc-menu'),
+                  isActive = $sub.hasClass('is-active');
+              $elem.attr({
+                'aria-controls': subId,
+                'aria-expanded': isActive,
+                'role': 'tab',
+                'id': linkId
+              });
+              $sub.attr({
+                'aria-labelledby': linkId,
+                'aria-hidden': !isActive,
+                'role': 'tabpanel',
+                'id': subId
+              });
+            });
+            var initPanes = this.$element.find('.is-active');
+            if (initPanes.length) {
+              var _this = this;
+              initPanes.each(function () {
+                _this.down($(this));
+              });
+            }
+            this._events();
+          }
+
+          /**
+           * Adds event handlers for items within the menu.
+           * @private
+           */
+
+        }, {
+          key: "_events",
+          value: function _events() {
+            var _this = this;
+
+            this.$element.find('li').each(function () {
+              var $submenu = $(this).children('[data-submenu]');
+
+              if ($submenu.length) {
+                $(this).children('a').off('click.zf.accordionMenu').on('click.zf.accordionMenu', function (e) {
+                  e.preventDefault();
+
+                  _this.toggle($submenu);
+                });
+              }
+            }).on('keydown.zf.accordionmenu', function (e) {
+              var $element = $(this),
+                  $elements = $element.parent('ul').children('li'),
+                  $prevElement,
+                  $nextElement,
+                  $target = $element.children('[data-submenu]');
+
+              $elements.each(function (i) {
+                if ($(this).is($element)) {
+                  $prevElement = $elements.eq(Math.max(0, i - 1)).find('a').first();
+                  $nextElement = $elements.eq(Math.min(i + 1, $elements.length - 1)).find('a').first();
+
+                  if ($(this).children('[data-submenu]:visible').length) {
+                    // has open sub menu
+                    $nextElement = $element.find('li:first-child').find('a').first();
+                  }
+                  if ($(this).is(':first-child')) {
+                    // is first element of sub menu
+                    $prevElement = $element.parents('li').first().find('a').first();
+                  } else if ($prevElement.children('[data-submenu]:visible').length) {
+                    // if previous element has open sub menu
+                    $prevElement = $prevElement.find('li:last-child').find('a').first();
+                  }
+                  if ($(this).is(':last-child')) {
+                    // is last element of sub menu
+                    $nextElement = $element.parents('li').first().next('li').find('a').first();
+                  }
+
+                  return;
+                }
+              });
+              Foundation.Keyboard.handleKey(e, 'AccordionMenu', {
+                open: function open() {
+                  if ($target.is(':hidden')) {
+                    _this.down($target);
+                    $target.find('li').first().find('a').first().focus();
+                  }
+                },
+                close: function close() {
+                  if ($target.length && !$target.is(':hidden')) {
+                    // close active sub of this item
+                    _this.up($target);
+                  } else if ($element.parent('[data-submenu]').length) {
+                    // close currently open sub
+                    _this.up($element.parent('[data-submenu]'));
+                    $element.parents('li').first().find('a').first().focus();
+                  }
+                },
+                up: function up() {
+                  $prevElement.attr('tabindex', -1).focus();
+                  return true;
+                },
+                down: function down() {
+                  $nextElement.attr('tabindex', -1).focus();
+                  return true;
+                },
+                toggle: function toggle() {
+                  if ($element.children('[data-submenu]').length) {
+                    _this.toggle($element.children('[data-submenu]'));
+                  }
+                },
+                closeAll: function closeAll() {
+                  _this.hideAll();
+                },
+                handled: function handled(preventDefault) {
+                  if (preventDefault) {
+                    e.preventDefault();
+                  }
+                  e.stopImmediatePropagation();
+                }
+              });
+            }); //.attr('tabindex', 0);
+          }
+
+          /**
+           * Closes all panes of the menu.
+           * @function
+           */
+
+        }, {
+          key: "hideAll",
+          value: function hideAll() {
+            this.$element.find('[data-submenu]').slideUp(this.options.slideSpeed);
+          }
+
+          /**
+           * Toggles the open/close state of a submenu.
+           * @function
+           * @param {jQuery} $target - the submenu to toggle
+           */
+
+        }, {
+          key: "toggle",
+          value: function toggle($target) {
+            if (!$target.is(':animated')) {
+              if (!$target.is(':hidden')) {
+                this.up($target);
+              } else {
+                this.down($target);
+              }
+            }
+          }
+
+          /**
+           * Opens the sub-menu defined by `$target`.
+           * @param {jQuery} $target - Sub-menu to open.
+           * @fires AccordionMenu#down
+           */
+
+        }, {
+          key: "down",
+          value: function down($target) {
+            var _this = this;
+
+            if (!this.options.multiOpen) {
+              this.up(this.$element.find('.is-active').not($target.parentsUntil(this.$element).add($target)));
+            }
+
+            $target.addClass('is-active').attr({ 'aria-hidden': false }).parent('.is-accordion-submenu-parent').attr({ 'aria-expanded': true });
+
+            //Foundation.Move(this.options.slideSpeed, $target, function() {
+            $target.slideDown(_this.options.slideSpeed, function () {
+              /**
+               * Fires when the menu is done opening.
+               * @event AccordionMenu#down
+               */
+              _this.$element.trigger('down.zf.accordionMenu', [$target]);
+            });
+            //});
+          }
+
+          /**
+           * Closes the sub-menu defined by `$target`. All sub-menus inside the target will be closed as well.
+           * @param {jQuery} $target - Sub-menu to close.
+           * @fires AccordionMenu#up
+           */
+
+        }, {
+          key: "up",
+          value: function up($target) {
+            var _this = this;
+            //Foundation.Move(this.options.slideSpeed, $target, function(){
+            $target.slideUp(_this.options.slideSpeed, function () {
+              /**
+               * Fires when the menu is done collapsing up.
+               * @event AccordionMenu#up
+               */
+              _this.$element.trigger('up.zf.accordionMenu', [$target]);
+            });
+            //});
+
+            var $menus = $target.find('[data-submenu]').slideUp(0).addBack().attr('aria-hidden', true);
+
+            $menus.parent('.is-accordion-submenu-parent').attr('aria-expanded', false);
+          }
+
+          /**
+           * Destroys an instance of accordion menu.
+           * @fires AccordionMenu#destroyed
+           */
+
+        }, {
+          key: "destroy",
+          value: function destroy() {
+            this.$element.find('[data-submenu]').slideDown(0).css('display', '');
+            this.$element.find('a').off('click.zf.accordionMenu');
+
+            Foundation.Nest.Burn(this.$element, 'accordion');
+            Foundation.unregisterPlugin(this);
+          }
+        }]);
+
+        return AccordionMenu;
+      }();
+
+      AccordionMenu.defaults = {
+        /**
+         * Amount of time to animate the opening of a submenu in ms.
+         * @option
+         * @example 250
+         */
+        slideSpeed: 250,
+        /**
+         * Allow the menu to have multiple open panes.
+         * @option
+         * @example true
+         */
+        multiOpen: true
+      };
+
+      // Window exports
+      Foundation.plugin(AccordionMenu, 'AccordionMenu');
+    }(jQuery);
+  }, {}], 3: [function (require, module, exports) {
     !function ($) {
 
       "use strict";
@@ -1229,7 +1532,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
       }
     }(jQuery);
-  }, {}], 3: [function (require, module, exports) {
+  }, {}], 4: [function (require, module, exports) {
     'use strict';
 
     !function ($) {
@@ -1672,7 +1975,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       // Window exports
       Foundation.plugin(DropdownMenu, 'DropdownMenu');
     }(jQuery);
-  }, {}], 4: [function (require, module, exports) {
+  }, {}], 5: [function (require, module, exports) {
     'use strict';
 
     !function ($) {
@@ -1869,7 +2172,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     }(jQuery);
-  }, {}], 5: [function (require, module, exports) {
+  }, {}], 6: [function (require, module, exports) {
     /*******************************************
      *                                         *
      * This util was created by Marius Olbertz *
@@ -1993,7 +2296,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       Foundation.Keyboard = Keyboard;
     }(jQuery);
-  }, {}], 6: [function (require, module, exports) {
+  }, {}], 7: [function (require, module, exports) {
     'use strict';
 
     !function ($) {
@@ -2210,7 +2513,105 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       Foundation.MediaQuery = MediaQuery;
     }(jQuery);
-  }, {}], 7: [function (require, module, exports) {
+  }, {}], 8: [function (require, module, exports) {
+    'use strict';
+
+    !function ($) {
+
+      /**
+       * Motion module.
+       * @module foundation.motion
+       */
+
+      var initClasses = ['mui-enter', 'mui-leave'];
+      var activeClasses = ['mui-enter-active', 'mui-leave-active'];
+
+      var Motion = {
+        animateIn: function animateIn(element, animation, cb) {
+          animate(true, element, animation, cb);
+        },
+
+        animateOut: function animateOut(element, animation, cb) {
+          animate(false, element, animation, cb);
+        }
+      };
+
+      function Move(duration, elem, fn) {
+        var anim,
+            prog,
+            start = null;
+        // console.log('called');
+
+        function move(ts) {
+          if (!start) start = window.performance.now();
+          // console.log(start, ts);
+          prog = ts - start;
+          fn.apply(elem);
+
+          if (prog < duration) {
+            anim = window.requestAnimationFrame(move, elem);
+          } else {
+            window.cancelAnimationFrame(anim);
+            elem.trigger('finished.zf.animate', [elem]).triggerHandler('finished.zf.animate', [elem]);
+          }
+        }
+        anim = window.requestAnimationFrame(move);
+      }
+
+      /**
+       * Animates an element in or out using a CSS transition class.
+       * @function
+       * @private
+       * @param {Boolean} isIn - Defines if the animation is in or out.
+       * @param {Object} element - jQuery or HTML object to animate.
+       * @param {String} animation - CSS class to use.
+       * @param {Function} cb - Callback to run when animation is finished.
+       */
+      function animate(isIn, element, animation, cb) {
+        element = $(element).eq(0);
+
+        if (!element.length) return;
+
+        var initClass = isIn ? initClasses[0] : initClasses[1];
+        var activeClass = isIn ? activeClasses[0] : activeClasses[1];
+
+        // Set up the animation
+        reset();
+
+        element.addClass(animation).css('transition', 'none');
+
+        requestAnimationFrame(function () {
+          element.addClass(initClass);
+          if (isIn) element.show();
+        });
+
+        // Start the animation
+        requestAnimationFrame(function () {
+          element[0].offsetWidth;
+          element.css('transition', '').addClass(activeClass);
+        });
+
+        // Clean up the animation when it finishes
+        element.one(Foundation.transitionend(element), finish);
+
+        // Hides the element (for out animations), resets the element, and runs a callback
+        function finish() {
+          if (!isIn) element.hide();
+          reset();
+          if (cb) cb.apply(element);
+        }
+
+        // Resets transitions and removes motion-specific classes
+        function reset() {
+          element[0].style.transitionDuration = 0;
+          element.removeClass(initClass + " " + activeClass + " " + animation);
+        }
+      }
+
+      Foundation.Move = Move;
+      Foundation.Motion = Motion;
+    }(jQuery);
+  }, {}], 9: [function (require, module, exports) {
     'use strict';
 
     !function ($) {
@@ -2280,7 +2681,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       Foundation.Nest = Nest;
     }(jQuery);
-  }, {}], 8: [function (require, module, exports) {
+  }, {}], 10: [function (require, module, exports) {
     window.whatInput = function () {
 
       'use strict';
@@ -2550,15 +2951,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         set: switchInput
       };
     }();
-  }, {}], 9: [function (require, module, exports) {
+  }, {}], 11: [function (require, module, exports) {
     var fastclick = require("fastclick/lib/fastclick");
     var whatInput = require("what-input/what-input.js");
     var foundation = require("foundation-sites/js/foundation.core");
     var foundationUtilMediaQuery = require("foundation-sites/js/foundation.util.mediaQuery");
     var foundationUtilKeyboard = require("foundation-sites/js/foundation.util.keyboard");
     var foundationUtilBox = require("foundation-sites/js/foundation.util.box");
+    var foundationUtilMotion = require("foundation-sites/js/foundation.util.motion");
     var foundationUtilNest = require("foundation-sites/js/foundation.util.nest");
     var foundationDropdownMenu = require("foundation-sites/js/foundation.dropdownMenu");
+    var foundationAccordionMenu = require("foundation-sites/js/foundation.accordionMenu");
     var navigation = require("./requires/navigation");
     var skipLinkFocusFix = require("./requires/skip-link-focus-fix");
 
@@ -2567,7 +2970,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       $(document).foundation();
     })(jQuery);
-  }, { "./requires/navigation": 10, "./requires/skip-link-focus-fix": 11, "fastclick/lib/fastclick": 1, "foundation-sites/js/foundation.core": 2, "foundation-sites/js/foundation.dropdownMenu": 3, "foundation-sites/js/foundation.util.box": 4, "foundation-sites/js/foundation.util.keyboard": 5, "foundation-sites/js/foundation.util.mediaQuery": 6, "foundation-sites/js/foundation.util.nest": 7, "what-input/what-input.js": 8 }], 10: [function (require, module, exports) {
+  }, { "./requires/navigation": 12, "./requires/skip-link-focus-fix": 13, "fastclick/lib/fastclick": 1, "foundation-sites/js/foundation.accordionMenu": 2, "foundation-sites/js/foundation.core": 3, "foundation-sites/js/foundation.dropdownMenu": 4, "foundation-sites/js/foundation.util.box": 5, "foundation-sites/js/foundation.util.keyboard": 6, "foundation-sites/js/foundation.util.mediaQuery": 7, "foundation-sites/js/foundation.util.motion": 8, "foundation-sites/js/foundation.util.nest": 9, "what-input/what-input.js": 10 }], 12: [function (require, module, exports) {
     /**
      * File navigation.js.
      *
@@ -2649,7 +3052,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }
     })();
-  }, {}], 11: [function (require, module, exports) {
+  }, {}], 13: [function (require, module, exports) {
     /**
      * File skip-link-focus-fix.js.
      *
@@ -2683,4 +3086,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, false);
       }
     })();
-  }, {}] }, {}, [9]);
+  }, {}] }, {}, [11]);

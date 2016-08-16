@@ -1,3 +1,11 @@
+.main-navigation {
+    @include show-for(medium);
+}
+
+.main-navigation-mobile {
+    @include show-for-only(small);
+}
+
 .menu {
     @include menu-base;
     @include menu-icons;
@@ -9,3 +17,4 @@
 }
 
 @include foundation-dropdown-menu;
+@include foundation-accordion-menu;
