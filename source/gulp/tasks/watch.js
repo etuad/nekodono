@@ -12,9 +12,6 @@ gulp.task("watch", function () {
         return gulp.start(["scss"]);
     });
     $.watch(conf.js.src, function () {
-        return gulp.start(["js"]);
-    });
-    $.watch(conf.js.map, function () {
-        return gulp.start(["js:map"]);
+        return gulp.start(["watchify"]);
     });
 });

@@ -7,6 +7,7 @@ var theme = path.resolve(root + "/../../");
 var themeName = theme.replace(/((.*?)\/)*/, "");
 var wpPath = root.replace("/wp-content/themes/" + themeName + "/source/gulp", "");
 var wpURI = "http://nekodono.com";
+var wpThemeUri = wpURI + "/wp-content/themes/" + themeName;
 var wpSSL = false;
 var src = theme + "/source";
 var dest = theme + "/assets";
@@ -18,6 +19,7 @@ module.exports = {
     gulpTasks      : gulpTasks,
     wpPath         : wpPath,
     wpURI          : wpURI,
+    wpThemeUri     : wpThemeUri,
     wpSSL          : wpSSL,
     theme          : theme,
     src            : src,
@@ -41,8 +43,7 @@ module.exports = {
     js             : {
         map   : src + "/js/**/*.map",
         src   : [
-            nodeModules + "/fastclick/lib/fastclick.js",
-            nodeModules + "/foundation-sites/js/foundation.core.js"
+            src + "/js/apps.js"
         ],
         minify: [
             dest + "/js/**/*.js",
@@ -54,6 +55,7 @@ module.exports = {
         dest + "/img/**/*.+(jpg|jpeg|png|gif|svg)",
         dest + "/css/**/*.+(css|map)",
         dest + "/js/**/*.+(js|map)",
-        "!" + dest + "/css/vendor/**/*.css"
+        "!" + dest + "/css/vendor/**/*.css",
+        "!" + dest + "/js/customizer.js"
     ]
 };

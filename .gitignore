@@ -63,6 +63,8 @@ $RECYCLE.BIN/
 
 
 # Custom
+*.log
 .idea
 bower_components
 node_modules
+
