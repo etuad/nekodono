@@ -18,7 +18,6 @@ gulp.task('js', $.watchify(function (watchify) {
         .pipe($.streamify($.babel({
             presets: ['es2015']
         })))
-        .pipe($.streamify($.concat('apps.js')))
         .pipe($.streamify($.crLfReplace({changeCode: 'LF'})))
         .pipe(gulp.dest(conf.js.dest))
         .pipe($.rename({suffix: '.min'}))

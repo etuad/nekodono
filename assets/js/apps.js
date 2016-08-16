@@ -2962,15 +2962,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var foundationUtilNest = require('foundation-sites/js/foundation.util.nest');
     var foundationDropdownMenu = require('foundation-sites/js/foundation.dropdownMenu');
     var foundationAccordionMenu = require('foundation-sites/js/foundation.accordionMenu');
-    var navigation = require('./requires/navigation');
-    var skipLinkFocusFix = require('./requires/skip-link-focus-fix');
+    var navigation = require('./components/navigation');
+    var skipLinkFocusFix = require('./components/skip-link-focus-fix');
 
     (function ($) {
       'use strict';
 
       $(document).foundation();
     })(jQuery);
-  }, { "./requires/navigation": 12, "./requires/skip-link-focus-fix": 13, "fastclick/lib/fastclick": 1, "foundation-sites/js/foundation.accordionMenu": 2, "foundation-sites/js/foundation.core": 3, "foundation-sites/js/foundation.dropdownMenu": 4, "foundation-sites/js/foundation.util.box": 5, "foundation-sites/js/foundation.util.keyboard": 6, "foundation-sites/js/foundation.util.mediaQuery": 7, "foundation-sites/js/foundation.util.motion": 8, "foundation-sites/js/foundation.util.nest": 9, "what-input/what-input.js": 10 }], 12: [function (require, module, exports) {
+  }, { "./components/navigation": 12, "./components/skip-link-focus-fix": 13, "fastclick/lib/fastclick": 1, "foundation-sites/js/foundation.accordionMenu": 2, "foundation-sites/js/foundation.core": 3, "foundation-sites/js/foundation.dropdownMenu": 4, "foundation-sites/js/foundation.util.box": 5, "foundation-sites/js/foundation.util.keyboard": 6, "foundation-sites/js/foundation.util.mediaQuery": 7, "foundation-sites/js/foundation.util.motion": 8, "foundation-sites/js/foundation.util.nest": 9, "what-input/what-input.js": 10 }], 12: [function (require, module, exports) {
     /**
      * File navigation.js.
      *
